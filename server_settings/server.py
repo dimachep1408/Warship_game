@@ -31,7 +31,7 @@ def start_server(start_server = True):
     
     def getting_message(): 
         print("work")
-        global position_enemy_ships, data_turn, position_shot, flag_send_messagem, rotation_enemy_ships
+        global position_enemy_ships, data_turn, position_shot, flag_send_message, rotation_enemy_ships, closed
         while True: 
             try: 
                 data = client_socket.recv(1024).decode()
@@ -49,6 +49,8 @@ def start_server(start_server = True):
                 elif "/" in data:
                     position_shot = ast.literal_eval(data.split("/")[-1])
                     print(position_shot)
+                elif "!" in data:
+                    closed = True
             except Exception as e: 
                 print(f"work - {e}")
                 return data

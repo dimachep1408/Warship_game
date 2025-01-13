@@ -1,8 +1,12 @@
-import pygame, time, os, json
+import pygame, time, os, json, random
 import threading
 import server_settings
 from modules import FourCellsShip, OneCellsShip, TwoCellsShip, ThreeCellsShip
 from modules import Button, Screen, Field
+
+# coin_flip = random.randint(2)
+
+# print(coin_flip)
 
 from modules import *
 
@@ -143,19 +147,29 @@ server_x, server_y = (255, 350)
 client_x, client_y = (750, 350)
 
 ships_x, ships_y = (190, 500)
-screen.game_window.fill(color= "dark blue")
+
 
 first_flag = False
 second_flag = False
 third_flag = False
 
+enemy_ships_rotation = None
+
+closed_flag = False
+
+bg = pygame.image.load(os.path.abspath(__file__ + "/../images/background_1.jpg"))
+bg = pygame.transform.scale(bg, (1200, 800))
+
 if __name__ == "__main__":
     while True:
 
-        
+        if closed_flag:
+            screen.game_window.blit(bg, (0,0))
+            button_submit_ships = Button(screen.game_window, position = (-100, -100), color = 'gray')
+            button_submit_ships.Font(text='submit', font_size=40)
 
         if flag == "menu1":
-            screen.game_window.fill(color= "dark blue")
+            screen.game_window.blit(bg, (0,0))
             button_server = Button(screen.game_window, position = (server_x, server_y), color = 'gray')
             button_client = Button(screen.game_window, position = (client_x, client_y), color = 'gray')
 
@@ -168,7 +182,7 @@ if __name__ == "__main__":
 
 
         elif flag == "menu2":
-            screen.game_window.fill(color= "dark blue")
+            screen.game_window.blit(bg, (0,0))
 
 
             screen.game_window.blit(field.field_surf, dest = (550, 150))
@@ -222,16 +236,22 @@ if __name__ == "__main__":
 
         elif flag == "game":
             try:
-                from server_settings.server import position_enemy_ships
-                user = 'server'
-                flag_start = True
-                from server_settings.server import rotation_enemy_ships, position_shot
+                from server_settings.server import position_enemy_ships, closed
+                if closed:
+                    pass
+                else:
+                    user = 'server'
+                    flag_start = True
+                    from server_settings.server import rotation_enemy_ships, position_shot
             except:
                 try:
-                    from server_settings.client import position_enemy_ships
-                    user = 'client'
-                    flag_start = True
-                    from server_settings.client import rotation_enemy_ships, position_shot
+                    from server_settings.client import position_enemy_ships, closed
+                    if closed:
+                        pass
+                    else:
+                        user = 'client'
+                        flag_start = True
+                        from server_settings.client import rotation_enemy_ships, position_shot
                 except:
                     pass
             try:
@@ -241,6 +261,11 @@ if __name__ == "__main__":
                 pass
 
             if flag_start:
+                try:
+                    enemy_rotation_ships = rotation_enemy_ships
+                except:
+                    pass
+                
                 if len(player_matrix) > 10:
                     screen.game_window.fill(color="dark blue")
                     field_player = Field(dest = (50, 150))    
@@ -357,6 +382,11 @@ if __name__ == "__main__":
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
+                try:
+                    from server_settings.client import client_socket
+                    client_socket.send("close!")
+                except:
+                    pass
                 pygame.quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -377,7 +407,7 @@ if __name__ == "__main__":
 
                 elif button_client.button_clicked(event.pos):
                     if flag == 'menu1':
-                        server_settings.connect_client('192.168.0.103', 8080)
+                        server_settings.connect_client('10.103.139.220', 8080)
                         from server_settings.client import client_socket
                         flag_message = True
                         client_x, client_y = (100000000000, 1000000000000)
@@ -393,9 +423,6 @@ if __name__ == "__main__":
                     if four_cells_ship.get_clicked(event.pos):
                         print("clicked four")
                         list_clicked_ships["four"] = 1
-
-                        if position_ships["four"] != (150, 50):
-                            position_ships["four"] = field.get_clicked_cell_position(event.pos)
 
                     if three_cells_ship1.get_clicked(event.pos):
                         print("clicked three 1")
@@ -635,7 +662,7 @@ if __name__ == "__main__":
                                     client_socket.send(f'position/{position_ships}'.encode())
                                     flag_message = False
                                     flag = "game"
-                                    screen.game_window.fill(color= "dark blue")
+                                    screen.game_window.blit(bg, (0,0))
                                     time.sleep(1)
                                     client_socket.send(f'rotation/{rotation_ships}'.encode())
                                 # else:
@@ -684,8 +711,6 @@ if __name__ == "__main__":
                             from server_settings.client import rotation_enemy_ships
                         except ImportError:
                             pass
-
-                    print(rotation_enemy_ships)
                                         
                     try:
                         if user == "server":
@@ -694,6 +719,8 @@ if __name__ == "__main__":
                             path_to_json = os.path.abspath(__file__ + "/../data_c.json")
                         with open(path_to_json, 'r') as f:
                             data_turn = json.load(f)
+
+
                         if data_turn['turn']:
                             hit = field_enemy.click(enemy_matrix, screen.game_window, event.pos)
                             column, row = field_enemy.get_clicked_cell(event.pos)
@@ -712,38 +739,40 @@ if __name__ == "__main__":
                             print(enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1])
                             print(clicked_cell)
 
+                        
                             if matrix_shots[clicked_cell[0]][clicked_cell[1]] == enemy_matrix[clicked_cell[0]][clicked_cell[1]] and first_flag and second_flag and third_flag:
-                                four_cells_ship = FourCellsShip(matrix_x= matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= rotation_ships["four"], killed = True)
+                                four_cells_ship = FourCellsShip(matrix_x= matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= enemy_rotation_ships["four"], killed = True)
                                 screen.game_window.blit(four_cells_ship.ship_surf, four_cells_ship.ship_rect)
                                 print("")
                                 first_flag = False
                                 second_flag = False
                                 third_flag = False
+                                
                             if matrix_shots[clicked_cell[0]][clicked_cell[1]] == enemy_matrix[clicked_cell[0]][clicked_cell[1]] and first_flag and second_flag and not third_flag:
-                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] % 3 == 0:
+                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] != 2:
                                     first_flag = False
                                     second_flag = False
                                     third_flag = False
-                                    three_cells_ship = ThreeCellsShip(matrix_x = matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= rotation_ships["three1"], killed = True)
+                                    three_cells_ship = ThreeCellsShip(matrix_x = matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= enemy_rotation_ships["three1"], killed = True)
                                     screen.game_window.blit(three_cells_ship.ship_surf, three_cells_ship.ship_rect)
                                 else:
                                     print("")
                                     third_flag = True
 
                             if matrix_shots[clicked_cell[0]][clicked_cell[1]] == enemy_matrix[clicked_cell[0]][clicked_cell[1]] and first_flag and not second_flag:
-                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] % 3 == 0:
+                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] != 2:
                                     first_flag = False
                                     second_flag = False
                                     third_flag = False
-                                    two_cells_ship1 = TwoCellsShip(matrix_x = matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= rotation_ships["two1"], killed = True)
+                                    two_cells_ship1 = TwoCellsShip(matrix_x = matrix_x, x = first_coordinates[0], y = first_coordinates[1], rotation= enemy_rotation_ships["two1"], killed = True)
                                     screen.game_window.blit(two_cells_ship1.ship_surf, two_cells_ship1.ship_rect)
                                 else:
                                     print("")
                                     second_flag = True
 
                             if matrix_shots[clicked_cell[0]][clicked_cell[1]] == enemy_matrix[clicked_cell[0]][clicked_cell[1]] and not first_flag:
-                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] % 3 == 0:
-                                    one_cell_ship1 = OneCellsShip(matrix_x = matrix_x, x = field_enemy.get_clicked_cell_position(event.pos)[0], y = field_enemy.get_clicked_cell_position(event.pos)[1], rotation= rotation_ships["one1"], killed = True)
+                                if enemy_matrix[clicked_cell[0]][clicked_cell[1] + 1] != 2:
+                                    one_cell_ship1 = OneCellsShip(matrix_x = matrix_x, x = field_enemy.get_clicked_cell_position(event.pos)[0], y = field_enemy.get_clicked_cell_position(event.pos)[1], rotation= enemy_rotation_ships["one1"], killed = True)
                                     screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
                                     print("aefimpehajgoui")
                                 
@@ -760,6 +789,9 @@ if __name__ == "__main__":
                                 data_turn['turn'] = False
                             with open(path_to_json, 'w') as f:
                                 json.dump(data_turn, f, indent = 4)
+
+                        else:
+                            pass
                     except Exception as e:
                         print(e)
  

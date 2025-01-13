@@ -10,9 +10,9 @@ class Button():
 
         self.x = position[0]
         self.y = position[1]
-    def Font(self, color = "black", text = "Hello", font_size = 24):
+    def Font(self, color = "black", text = "Hello", font_size = 24, font_family = None):
         
-        self.font = pygame.font.Font(None, font_size)
+        self.font = pygame.font.Font(font_family, font_size)
         self.text = self.font.render(f"{text}", True, color)
         
     def button_clicked(self, mouse_position):
