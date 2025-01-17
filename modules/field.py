@@ -19,10 +19,12 @@ class Field():
                     border_size = 1,
                 )
 
-    def get_clicked_cell(self, mouse_pos):
+    def get_clicked_cell(self, mouse_pos, enemy = False):
         x, y = mouse_pos
         i = (x - self.dest[0]) // 50
         j = (y - self.dest[1]) // 50
+        if enemy:
+            i += 2
         if 0 <= i < 10 and 0 <= j < 10:
             return (i, j)
         return None
@@ -98,3 +100,61 @@ class Field():
             self.cross = pygame.transform.scale(pygame.image.load(self.cross), (50, 50))
             screen.blit(self.cross, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))
         return hit
+    def fill_after_destroy(self, matrix, ship_size, position, rotation, screen):
+        self.circle = os.path.abspath(__file__ + "/../../images/circle.png")
+        self.circle = pygame.transform.scale(pygame.image.load(self.circle), (50, 50))
+        row, column = self.get_clicked_cell(position, enemy = True)
+        if rotation:
+            for i in range(ship_size):
+                print('row')
+                if column != 9:
+                    # matrix[column + 1][row + i] = 0
+                    screen.blit(self.circle, ((row + i + self.dest[0] // 50) * 50, (column + 1 + self.dest[1] // 50) * 50))
+                if column != 0:
+                    # matrix[column - 1][row + i] = 0
+                    screen.blit(self.circle, ((row + i + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+            if row != 0:
+                # matrix[column][row - 1] = 0
+                screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50))
+                if column != 9:
+                    # matrix[column + 1][row - 1] = 0
+                    screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column + 1 + self.dest[1] // 50) * 50))
+                if column != 0:
+                    # matrix[column - 1][row - 1] = 0
+                    screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+            if row + ship_size != 10:
+                # matrix[column][row + ship_size] = 0
+                screen.blit(self.circle, ((row + ship_size + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50))
+                if column != 9:
+                    # matrix[column + 1][row + ship_size] = 0
+                    screen.blit(self.circle, ((row + ship_size + self.dest[0] // 50) * 50, (column + 1 + self.dest[1] // 50) * 50))
+                if column != 0:
+                    # matrix[column - 1][row + ship_size] = 0
+                    screen.blit(self.circle, ((row + ship_size + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+        else:
+            for i in range(ship_size):
+                print('column')
+                if row != 9:
+                    # matrix[column + i][row + 1] = 0
+                    screen.blit(self.circle, ((row + 1 + self.dest[0] // 50) * 50, (column + i + self.dest[1] // 50) * 50))
+                if row != 0:
+                    # matrix[column + i][row - 1] = 0
+                    screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column + i + self.dest[1] // 50) * 50))
+            if column != 0:
+                # matrix[column - 1][row] = 0
+                screen.blit(self.circle, ((row + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+                if row != 9:
+                    # matrix[column - 1][row + 1] = 0
+                    screen.blit(self.circle, ((row + 1 + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+                if row != 0:
+                    # matrix[column - 1][row - 1] = 0
+                    screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column - 1 + self.dest[1] // 50) * 50))
+            if column + ship_size != 10:
+                # matrix[column + ship_size][row] = 0
+                screen.blit(self.circle, ((row + self.dest[0] // 50) * 50, (column + ship_size + self.dest[1] // 50) * 50))
+                if row != 9:
+                    # matrix[column + ship_size][row + 1] = 0
+                    screen.blit(self.circle, ((row + 1 + self.dest[0] // 50) * 50, (column + ship_size + self.dest[1] // 50) * 50))
+                if row != 0:
+                    # matrix[column + ship_size][row - 1] = 0
+                    screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column + ship_size + self.dest[1] // 50) * 50))
