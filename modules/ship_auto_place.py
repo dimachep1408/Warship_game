@@ -1,13 +1,13 @@
 from random import *
 
 
-list_ships = []
-for i in range(12):
-    list_ships.append([])
-    for j in range(12):
-        list_ships[i].append(0)
-
 def auto_ship():
+    global list_ships
+    list_ships = []
+    for i in range(12):
+        list_ships.append([])
+        for j in range(12):
+            list_ships[i].append(0)
     w1 = 0
     w2 = 0
     w3 = 0
@@ -119,6 +119,8 @@ def auto_ship():
                     list_ships[r1][r2 - 1] = 1
                     list_ships[r1 + 1][r2 - 1] = 1
                     w4 += 1 
+
+        return list_ships
 auto_ship()
 del list_ships[0]
 del list_ships[10]
