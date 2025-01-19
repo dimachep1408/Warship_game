@@ -7,7 +7,12 @@ class Field():
         self.field_surf = pygame.Surface((width, height))
         self.field_surf.fill(color)
         self.draw_grid()
-
+        self.circle = os.path.abspath(__file__ + "/../../images/circle.png")
+        self.circle = pygame.transform.scale(pygame.image.load(self.circle), (50, 50))
+        self.cross = os.path.abspath(__file__ + "/../../images/cross.png")
+        self.cross = pygame.transform.scale(pygame.image.load(self.cross), (50, 50))
+        self.target = os.path.abspath(__file__ + "/../../images/target.png")
+        self.target = pygame.transform.scale(pygame.image.load(self.target), (50, 50))
     def draw_grid(self):
         for i in range(10):
             for j in range(10):
@@ -91,18 +96,12 @@ class Field():
         if mouse_pos != None:
             column, row = self.get_clicked_cell(mouse_pos)
         if list_ships[row][column] % 3 == 0:
-            self.circle = os.path.abspath(__file__ + "/../../images/circle.png")
-            self.circle = pygame.transform.scale(pygame.image.load(self.circle), (50, 50)) 
             screen.blit(self.circle, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))
         elif list_ships[row][column] == 2:
             hit = True
-            self.cross = os.path.abspath(__file__ + "/../../images/cross.png")
-            self.cross = pygame.transform.scale(pygame.image.load(self.cross), (50, 50))
             screen.blit(self.cross, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))
         return hit
     def fill_after_destroy(self, matrix, ship_size, position, rotation, screen):
-        self.circle = os.path.abspath(__file__ + "/../../images/circle.png")
-        self.circle = pygame.transform.scale(pygame.image.load(self.circle), (50, 50))
         row, column = self.get_clicked_cell(position, enemy = True)
         if rotation:
             for i in range(ship_size):
@@ -158,3 +157,38 @@ class Field():
                 if row != 0:
                     # matrix[column + ship_size][row - 1] = 0
                     screen.blit(self.circle, ((row - 1 + self.dest[0] // 50) * 50, (column + ship_size + self.dest[1] // 50) * 50))
+    def attack_3x3(self, matrix, screen, mouse_pos = None, position_attack = None):
+        if mouse_pos != None:
+            row, column = self.get_clicked_cell(mouse_pos)
+        elif position_attack != None:
+            column, row = position_attack
+        column_range = 3
+        row_range = 3
+        column_subtract = 1
+        row_subtract = 1
+        if row == 0:
+            row_range -= 1
+            row_subtract = 0
+        if column == 0:
+            column_range -= 1
+            column_subtract = 0
+        for i in range(column_range):
+            for j in range(row_range):
+                try:
+                    if matrix[column - column_subtract + i][row - row_subtract + j] % 3 == 0:
+                        # matrix[row + i][column + j] = 0
+                        screen.blit(self.circle, ((row - row_subtract + j + self.dest[0] // 50) * 50, (column - column_subtract + i + self.dest[1] // 50) * 50))
+                    elif matrix[column - column_subtract + i][row - row_subtract + j] == 2:
+                        # matrix[row + i][column + j] = 0
+                        screen.blit(self.cross, ((row - row_subtract + j + self.dest[0] // 50) * 50, (column - column_subtract + i + self.dest[1] // 50) * 50))
+                except IndexError:
+                    pass
+        return (column, row)
+    def aimed_strike(self, matrix, screen, mouse_pos):
+        row, column = self.get_clicked_cell(mouse_pos)
+        hit = f'circle%({(row + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50})'
+        screen.blit(self.target, ((row + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50))
+        if matrix[column][row] == 2:
+            hit = f'cross%({(row + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50})'
+            # matrix[column][row] = 0
+        return hit

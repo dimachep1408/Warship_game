@@ -1,4 +1,4 @@
-import pygame, time, os, json, random
+import pygame, time, os, json, random, ast
 import threading
 import server_settings
 from modules import FourCellsShip, OneCellsShip, TwoCellsShip, ThreeCellsShip
@@ -163,6 +163,13 @@ rotate_button = None
 button_submit_ships = None
 button_auto_ships = None
 
+button_3x3 = None
+attack_3x3 = False
+
+button_aimed_strike = None
+aimed_strike = False
+list_strikes = []
+
 wait = True
 server_x, server_y = (255, 350)
 
@@ -273,13 +280,13 @@ if __name__ == "__main__":
                 from server_settings.server import position_enemy_ships
                 user = 'server'
                 flag_start = True
-                from server_settings.server import rotation_enemy_ships, position_shot
+                from server_settings.server import rotation_enemy_ships, position_shot, attack_3x3_position, aimed_strike_position
             except:
                 try:
                     from server_settings.client import position_enemy_ships
                     user = 'client'
                     flag_start = True
-                    from server_settings.client import rotation_enemy_ships, position_shot
+                    from server_settings.client import rotation_enemy_ships, position_shot, attack_3x3_position, aimed_strike_position
                 except:
                     pass
             try:
@@ -287,9 +294,46 @@ if __name__ == "__main__":
                 player_matrix2[position_shot[1]][position_shot[0]] = 0
             except:
                 pass
+            try:
+                if attack_3x3_position != None:
+                    field_player.attack_3x3(player_matrix, screen.game_window, position_attack = attack_3x3_position)
+            except:
+                pass
+            try:
+                aimed_strike_position[0] -= 600
+                field_player.click(player_matrix, screen.game_window, mouse_pos = aimed_strike_position)
+            except:
+                pass
+            
+            try:
+                if user == "server":
+                    path_to_json = os.path.abspath(__file__ + "/../data_s.json")
+                elif user == "client":     
+                    path_to_json = os.path.abspath(__file__ + "/../data_c.json")
+                
+                with open(path_to_json, 'r') as f:
+                    data_turn = json.load(f)
+                
+                turn_rect = Button(screen.game_window, position=(800, 20), color="gray", size=(200, 75))
+                if data_turn['turn']:
+                    turn_rect.Font(text='Your Turn', font_size=40)
+                    screen.game_window.blit(turn_rect.text, dest=(830, 25))
+                else:
+                    turn_rect.Font(text='Enemy Turn', font_size=40)
+                    screen.game_window.blit(turn_rect.text, dest=(810, 25))
+            except:
+                pass
 
             shop_image = pygame.transform.scale(shop_image, (50,50))
             screen.game_window.blit(shop_image, (1140, 10))
+            
+            button_3x3 = Button(screen.game_window, position=(400, 20), color="gray")
+            button_3x3.Font(text='3x3', font_size=40)
+            screen.game_window.blit(button_3x3.text, dest=(435, 25))
+            
+            button_aimed_strike = Button(screen.game_window, position=(600, 20), color="gray")
+            button_aimed_strike.Font(text='aimed strike', font_size=20)
+            screen.game_window.blit(button_aimed_strike.text, dest=(610, 30))
 
 
             if flag_start:
@@ -859,19 +903,38 @@ if __name__ == "__main__":
 
 
                         
-                        if user == "server":
-
-                            path_to_json = os.path.abspath(__file__ + "/../data_s.json")
-
-                        elif user == "client":
-                            
-                            path_to_json = os.path.abspath(__file__ + "/../data_c.json")
+                        
 
                         with open(path_to_json, 'r') as f:
                             data_turn = json.load(f)
 
+                        
                         if data_turn['turn']:
-                            if wait:
+                            if attack_3x3:
+                                column_3x3, row_3x3 = field_enemy.attack_3x3(enemy_matrix, screen.game_window, event.pos)
+                                attack_3x3 = False
+                                client_socket.send(f'attack_3x3/{(column_3x3, row_3x3)}'.encode())
+                                
+                            elif aimed_strike:
+                                hit = field_enemy.aimed_strike(enemy_matrix, screen.game_window, event.pos)
+                                client_socket.send(f'aimed_strike/{hit.split('%')[-1]}'.encode())
+                                list_strikes.append(hit)
+                                if len(list_strikes) > 4:
+                                    for i in list_strikes:
+                                        if 'circle' in i:
+                                            screen.game_window.blit(field_enemy.circle, ast.literal_eval(i.split('%')[-1]))
+                                        elif 'cross' in i:
+                                            screen.game_window.blit(field_enemy.cross, ast.literal_eval(i.split('%')[-1]))
+                                    aimed_strike = False
+                                    list_strikes = []
+                            
+                            elif button_3x3 != None and button_3x3.button_clicked(event.pos):
+                                attack_3x3 = True
+                            
+                            elif button_aimed_strike.button_clicked(event.pos):
+                                aimed_strike = True
+
+                            elif wait:
                                 wait = False
                                 hit = field_enemy.click(enemy_matrix, screen.game_window, event.pos)
                                 column, row = field_enemy.get_clicked_cell(event.pos)
@@ -1015,9 +1078,7 @@ if __name__ == "__main__":
                                     field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two3"], rotation_enemy_ships["two3"], screen.game_window)
 
 
-                                print(hit, 'hfvbnvjhvbghnvnbvvgvb hngygfhvb vgnghvnvb v ngh')
                                 if not hit:
-                                    print('idk')
                                     client_socket.send('turn'.encode())
                                     data_turn['turn'] = False
                                 with open(path_to_json, 'w') as f:
@@ -1126,7 +1187,7 @@ if __name__ == "__main__":
                         if rotation_ships["three2"]:
                             print(field.get_clicked_cell_position(event.pos))
 
-                            if field.get_clicked_cell(event.pos)[0] > 7 :
+                            if field.get_clicked_cell(event.pos)[0] > 7:
                                 position_ships["three2"] = (260, 115)
 
                             else:
