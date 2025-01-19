@@ -91,18 +91,16 @@ def get_ships_position(matrix : dict, return_position_ships = True):
 
 
 
-
                 try:
                     if matrix[row_count][number_count + 2] == 2 or matrix[row_count + 2][number_count] == 2:
                         pass
                 except:
                     pass
                 else:                    
-                    try:
-                        if matrix[row_count][number_count + 1] == 2:
-                            pass
-                    except:
-                        pass
+
+                    if matrix[row_count][number_count + 1] == 2:
+                        
+
 
                         if writed_ships["two3"] and writed_ships["two1"] == 0 and writed_ships["two2"] == 0:
                             rotation_ships_dict["two3"] = 0
@@ -123,32 +121,64 @@ def get_ships_position(matrix : dict, return_position_ships = True):
                             writed_ships["two1"] = 1
 
 
-                    try:
-                        if matrix[row_count + 1][number_count] == 2:
 
-                            if writed_ships["two3"] and writed_ships["two1"] == 0 and writed_ships["two2"] == 0:
-                                rotation_ships_dict["two3"] = 0
-                                position_ships_dict["two3"] = (row_count, number_count)
-                                writed_ships["two3"] = 0    
+                    if matrix[row_count + 1][number_count] == 2:
+
+                        if writed_ships["two3"] and writed_ships["two1"] == 0 and writed_ships["two2"] == 0:
+                            rotation_ships_dict["two3"] = 0
+                            position_ships_dict["two3"] = (row_count, number_count)
+                            writed_ships["two3"] = 0    
 
 
-                            if writed_ships["two2"] and writed_ships["two1"] == 0:
-                                rotation_ships_dict["two2"] = 0
-                                position_ships_dict["two2"] = (row_count, number_count)
-                                writed_ships["two2"] = 0
-                                
+                        if writed_ships["two2"] and writed_ships["two1"] == 0:
+                            rotation_ships_dict["two2"] = 0
+                            position_ships_dict["two2"] = (row_count, number_count)
+                            writed_ships["two2"] = 0
+                            
 
-                            if writed_ships["two1"]:
-                                print("work")
-                                rotation_ships_dict["two1"] = 0
-                                position_ships_dict["two1"] = (row_count, number_count)
-                                writed_ships["two1"] = 0
-                    except:
-                        pass
+                        if writed_ships["two1"]:
+                            print("work")
+                            rotation_ships_dict["two1"] = 0
+                            position_ships_dict["two1"] = (row_count, number_count)
+                            writed_ships["two1"] = 0
+
 
                         
 
+                try:
+                    if matrix[row_count][number_count + 3] == 2 or matrix[row_count + 2][number_count] == 3:
+                        pass
+                except:
+                    pass
+                else:                    
 
+                    if matrix[row_count][number_count + 1] == 2:
+                        
+
+
+                        if writed_ships["three1"] and writed_ships["three2"] == 0:
+                            rotation_ships_dict["three1"] = 0
+                            position_ships_dict["three1"] = (row_count, number_count)
+                            writed_ships["three1"] = 1  
+
+
+                        if writed_ships["three2"] and writed_ships["three1"] == 0:
+                            rotation_ships_dict["three2"] = 0
+                            position_ships_dict["three2"] = (row_count, number_count)
+                            writed_ships["three2"] = 1
+                            
+                    if matrix[row_count + 1][number_count] == 2:
+
+                        if writed_ships["three1"] and writed_ships["three2"] == 0:
+                            rotation_ships_dict["three1"] = 0
+                            position_ships_dict["three1"] = (row_count, number_count)
+                            writed_ships["three1"] = 0    
+
+
+                        if writed_ships["three2"] and writed_ships["three1"] == 0:
+                            rotation_ships_dict["three2"] = 0
+                            position_ships_dict["three2"] = (row_count, number_count)
+                            writed_ships["three2"] = 0
 
 
 
@@ -159,45 +189,41 @@ def get_ships_position(matrix : dict, return_position_ships = True):
                 except:
                     pass
                 else:                    
-                    try:
-                        if matrix[row_count][number_count + 1] == 2:
 
-                            if writed_ships["two2"] and writed_ships["two1"] == 0:
-                                rotation_ships_dict["two2"] = 0
-                                position_ships_dict["two2"] = (row_count, number_count)
-                                writed_ships["two2"] = 1
-                                
+                    if matrix[row_count][number_count + 1] == 2:
 
-                            if writed_ships["two1"]:
-                                rotation_ships_dict["two1"] = 0
-                                position_ships_dict["two1"] = (row_count, number_count)
-                                writed_ships["two1"] = 1
-                    except:
-                        pass
-
-
-                    try:
-                        if matrix[row_count + 1][number_count] == 2:
+                        if writed_ships["two2"] and writed_ships["two1"] == 0:
+                            rotation_ships_dict["two2"] = 0
+                            position_ships_dict["two2"] = (row_count, number_count)
+                            writed_ships["two2"] = 1
                             
-                            if writed_ships["two3"] and writed_ships["two1"] == 0 and writed_ships["two2"] == 0:
-                                rotation_ships_dict["two3"] = 0
-                                position_ships_dict["two3"] = (row_count, number_count)
-                                writed_ships["two3"] = 0    
+
+                        if writed_ships["two1"]:
+                            rotation_ships_dict["two1"] = 0
+                            position_ships_dict["two1"] = (row_count, number_count)
+                            writed_ships["two1"] = 1
 
 
-                            if writed_ships["two2"] and writed_ships["two1"] == 0:
-                                rotation_ships_dict["two2"] = 0
-                                position_ships_dict["two2"] = (row_count, number_count)
-                                writed_ships["two2"] = 0
-                                
 
-                            if writed_ships["two1"]:
-                                print("work")
-                                rotation_ships_dict["two1"] = 0
-                                position_ships_dict["two1"] = (row_count, number_count)
-                                writed_ships["two1"] = 0
-                    except:
-                        pass
+                    if matrix[row_count + 1][number_count] == 2:
+                        
+                        if writed_ships["two3"] and writed_ships["two1"] == 0 and writed_ships["two2"] == 0:
+                            rotation_ships_dict["two3"] = 0
+                            position_ships_dict["two3"] = (row_count, number_count)
+                            writed_ships["two3"] = 0    
+
+
+                        if writed_ships["two2"] and writed_ships["two1"] == 0:
+                            rotation_ships_dict["two2"] = 0
+                            position_ships_dict["two2"] = (row_count, number_count)
+                            writed_ships["two2"] = 0
+                            
+
+                        if writed_ships["two1"]:
+                            print("work")
+                            rotation_ships_dict["two1"] = 0
+                            position_ships_dict["two1"] = (row_count, number_count)
+                            writed_ships["two1"] = 0
 
                         
 

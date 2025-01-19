@@ -24,7 +24,7 @@ def connect_client(ip = None, port = None):
 
     def getting_message(): 
         print("work")
-        global position_enemy_ships, data_turn, position_shot, flag_send_message, rotation_enemy_ships, closed
+        global position_enemy_ships, data_turn, position_shot, flag_send_message, rotation_enemy_ships, closed, list_pvo_protect_sends
         while True: 
             try: 
                 data = client_socket.recv(1024).decode()
@@ -44,6 +44,8 @@ def connect_client(ip = None, port = None):
                     print(position_shot)
                 elif "!" in data:
                     closed = True
+                elif ":" in data:
+                    list_pvo_protect_sends = data
             except Exception as e: 
                 print(f"work - {e}")
                 return data

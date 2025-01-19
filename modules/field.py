@@ -90,7 +90,7 @@ class Field():
         hit = False
         if mouse_pos != None:
             column, row = self.get_clicked_cell(mouse_pos)
-        if list_ships[row][column] % 3 == 0:
+        if list_ships[row][column] != 2:
             self.circle = os.path.abspath(__file__ + "/../../images/circle.png")
             self.circle = pygame.transform.scale(pygame.image.load(self.circle), (50, 50)) 
             screen.blit(self.circle, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))

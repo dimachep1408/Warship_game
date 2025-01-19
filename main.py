@@ -1,8 +1,16 @@
-import pygame, time, os, json, random
+import pygame, time, os, json, random, requests, socket
 import threading
 import server_settings
 from modules import FourCellsShip, OneCellsShip, TwoCellsShip, ThreeCellsShip
 from modules import Button, Screen, Field, get_ships_position, auto_ship
+from modules import *
+
+
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+
+print("Your Computer Name is:" + hostname)
+print("Your Computer IP Address is:" + IPAddr)
 
 
 
@@ -10,7 +18,7 @@ from modules import Button, Screen, Field, get_ships_position, auto_ship
 
 # print(coin_flip)
 
-from modules import *
+
 
 pygame.init()
 
@@ -26,7 +34,7 @@ pygame.display.set_caption(title= 'Sea battle')
 
 
 clock = pygame.time.Clock()
-FPS = 1000
+FPS = 60
 
 user = ''
 scene = 'menu'
@@ -93,6 +101,13 @@ player_menu2_matrix = [[0,0,0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0,0,0],
                         [0,0,0,0,0,0,0,0,0,0]]
 
+
+button_3x3 = None
+attack_3x3 = False
+
+button_aimed_strike = None
+aimed_strike = False
+list_strikes = []
 
 kill_position_ships = {
     "four" : [],
@@ -195,14 +210,9 @@ blackout_screen = pygame.transform.scale(blackout_screen, (1200, 800))
 blackout_screen.set_alpha(155)
 
 
-shop_image = pygame.image.load(os.path.abspath(__file__ + "/../images/shop.png"))
-shop_image = pygame.transform.scale(shop_image, (50, 50))
-
-shop_rect = shop_image.get_rect(topleft = (1140, 10))
-
 coinflip = random.randint(1, 2)
 
-shop_animation = False
+
 
 
 animation_coin = [
@@ -227,28 +237,83 @@ ip = ""
 
 name = ""
 
+
+buttons_position = {
+    "red" : [10, 110],
+    "green" : [60, 110]
+}
+
+
+
+pvo_count = 2
+
+
+
 war_plane_image = pygame.image.load(os.path.abspath(__file__ + "/../images/war_plane.png"))
 war_plane_image = pygame.transform.scale(war_plane_image, (100, 100))
 
-war_plane_rect = war_plane_image.get_rect(topleft = (10,10))
+war_plane_rect = war_plane_image.get_rect(topleft = (1050, 0))
+
+
+war_plane_text = Button(screen.game_window, position=(1100, 100), color = "#6ab1db", size= (100, 50))
 
 
 green_cirlce = pygame.image.load(os.path.abspath(__file__ + "/../images/green_circle.png"))
 green_cirlce = pygame.transform.scale(green_cirlce, (30, 30))
 
-green_cirlce_rect = green_cirlce.get_rect(topleft = (10, 110))     
+green_cirlce_rect = green_cirlce.get_rect(topleft = (buttons_position["red"][0], buttons_position["red"][1]))     
 
 red_circle = pygame.image.load(os.path.abspath(__file__ + "/../images/red_circle.png"))
 red_circle = pygame.transform.scale(red_circle, (30, 30))
 
-red_circle_rect = red_circle.get_rect(topleft = (60, 110))   
+red_circle_rect = red_circle.get_rect(topleft = (buttons_position["red"][0], buttons_position["red"][1]))   
 
-flag_draw_confirm_btns = False
+coins = 50
 
-flag_green_btn_click = False
 
-flag_red_btn_click = False
+coins_btn = Button(screen.game_window, position=(0, 0), color = "#6ab1db", size= (100, 50))
 
+
+wrong_wire_image = pygame.image.load(os.path.abspath(__file__ + "/../images/wrong_wire.png"))
+wrong_wire_image = pygame.transform.scale(wrong_wire_image, (100, 90))
+
+wrong_wire_rect = wrong_wire_image.get_rect(topleft = (550, 10))   
+
+wrong_wire_text = Button(screen.game_window, position=(550, 10), color = "#6ab1db", size= (100, 50))
+
+
+
+
+pvo_image = pygame.image.load(os.path.abspath(__file__ + "/../images/pvo.png"))
+pvo_image = pygame.transform.scale(pvo_image, (100, 100))
+
+pvo_rect = pvo_image.get_rect(topleft = (450, 10))   
+
+pvo_text = Button(screen.game_window, position=(450, 10), color = "#6ab1db", size= (100, 50))
+
+pvo_coordinates = (0, 0)
+
+pvo_for_cursor = pygame.image.load(os.path.abspath(__file__ + "/../images/pvo.png"))
+pvo_for_cursor = pygame.transform.scale(pvo_image, (50, 50))
+
+flag_wrong_wire = False
+
+
+fear_and_panic_image = pygame.image.load(os.path.abspath(__file__ + "/../images/fear_and_panic.png"))
+fear_and_panic_image = pygame.transform.scale(fear_and_panic_image, (150, 100))
+
+fear_and_panic_rect = fear_and_panic_image.get_rect(topleft = (700, 10))   
+
+fear_and_panic_text = Button(screen.game_window, position=(750, 10), color = "#6ab1db", size= (100, 50))
+
+fear_and_panic_count = 0
+
+
+flag_follow_pvo_coordinates = False
+
+
+protect_shield_image = pygame.image.load(os.path.abspath(__file__ + "/../images/protect_shield.png"))
+protect_shield_image = pygame.transform.scale(protect_shield_image, (150, 150))
 
 
 if __name__ == "__main__":
@@ -256,31 +321,8 @@ if __name__ == "__main__":
 
         screen.game_window.blit(blackout_screen, (0,  blackout_screen_y))
 
-
-        if flag_draw_confirm_btns:
-            screen.game_window.blit(green_cirlce, (10, 110))
-            screen.game_window.blit(red_circle, (60, 110))
-
-            green_cirlce.set_alpha(250)
-            red_circle.set_alpha(250)
-
-
-        if flag_green_btn_click:
-            pass
-
-
-
-
-        if flag_red_btn_click:
-            screen.game_window.blit(green_cirlce, (-100, -100))
-            screen.game_window.blit(red_circle, (-100, -100))
-
-
-            green_cirlce.set_alpha(0)
-            red_circle.set_alpha(0)
-
-
-
+        
+            
 
         if animation_coin_count == len(animation_coin):
             animation_coin_count = 0
@@ -288,11 +330,14 @@ if __name__ == "__main__":
 
         if flag == "menu_load_ip_server":
             screen.game_window.blit(bg, (0,0))
+
+
             
             input_ip = pygame.Rect(1500, 300, 200, 50)
 
             pygame.draw.rect(screen.game_window, "#00ab99", input_ip)
 
+            
 
             flag = "menu2"
 
@@ -309,7 +354,9 @@ if __name__ == "__main__":
 
         if flag == "menu1":
             screen.game_window.blit(bg, (0,0))
-            
+
+
+
 
             coin_sprite = animation_coin[animation_coin_count]
             coin_sprite = pygame.transform.scale(coin_sprite, (100, 100))
@@ -328,6 +375,8 @@ if __name__ == "__main__":
 
             screen.game_window.blit(button_server.text, dest= (267, 89))   
             screen.game_window.blit(button_client.text, dest= (780, 89))
+
+            
 
 
 
@@ -394,6 +443,7 @@ if __name__ == "__main__":
             screen.game_window.blit(button_auto_ships.text, dest=(854, 25))
 
         elif flag == "game":
+            
             try:
                 from server_settings.server import position_enemy_ships
                 user = 'server'
@@ -413,10 +463,22 @@ if __name__ == "__main__":
             except:
                 pass
 
-            shop_image = pygame.transform.scale(shop_image, (50,50))
-            screen.game_window.blit(shop_image, (1140, 10))
+            screen.game_window.blit(war_plane_image, (1100,  0))
 
-            screen.game_window.blit(war_plane_image, (10,  10))
+            war_plane_text.Font(text = "75", font_size = 40)
+            screen.game_window.blit(war_plane_text.text, dest=(1100, 80)) 
+
+
+
+
+
+            text_background = pygame.Rect(10, 10, 300, 40)
+            pygame.draw.rect(screen.game_window, "#6ab1db", text_background)
+
+
+            coins_btn.Font(text=f'coins:{coins}', font_size=40)
+            screen.game_window.blit(coins_btn.text, dest=(10, 10)) 
+
 
 
             if flag_start:
@@ -427,6 +489,7 @@ if __name__ == "__main__":
                 
                 if len(player_matrix) > 10:
                     screen.game_window.blit(bg, (0,0))
+
                     field_player = Field(dest = (50, 150))    
                     field_enemy = Field(dest = (650, 150))
                     screen.game_window.blit(field_player.field_surf, dest = (50, 150))
@@ -542,13 +605,6 @@ if __name__ == "__main__":
             
 
         
-        if shop_animation:
-            print("hello")
-        
-            if blackout_screen_y < 0:
-                blackout_screen_y += 20
-            else:
-                blackout_screen_y = 0
 
 
 
@@ -568,13 +624,14 @@ if __name__ == "__main__":
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if shop_rect.collidepoint(event.pos):
-                    shop_animation = True
+
+                if button_auto_ships != None:
+                    if button_auto_ships.button_clicked(event.pos):
+                        pygame.mixer.Sound.play(btn_click_sound)
 
 
-                if war_plane_image != None:
-                    if war_plane_rect.collidepoint(event.pos):
-                        flag_draw_confirm_btns = True
+
+
 
                 if button_server.button_clicked(event.pos):
                     pygame.mixer.Sound.play(btn_click_sound)
@@ -604,54 +661,7 @@ if __name__ == "__main__":
 
                         flag = "menu1"
                         flag = "menu2"
- 
-                # try:
-                if button_auto_ships != None:
-                    if button_auto_ships.button_clicked(event.pos):
-                        pygame.mixer.Sound.play(btn_click_sound)
 
-                        matrix_random_ships = auto_ship()
-
-                        random_position_ships = get_ships_position(matrix = matrix_random_ships)
-
-                        random_rotation_ships = get_ships_position(matrix = matrix_random_ships, return_position_ships = False)
-
-                        screen.game_window.blit(bg, (0,0))
-
-                        four_cells_ship = FourCellsShip(matrix_x= matrix_x, x = random_position_ships["four"][0] - 500, y = random_position_ships["four"][1], rotation= random_rotation_ships["four"])
-
-
-                        three_cells_ship1 = ThreeCellsShip(matrix_x = matrix_x, x = random_position_ships["three1"][0] - 500, y = random_position_ships["three1"][1], rotation= random_rotation_ships["three1"])
-                        three_cells_ship2 = ThreeCellsShip(matrix_x = matrix_x, x = random_position_ships["three2"][0] - 500, y = random_position_ships["three2"][1], rotation= random_rotation_ships["three2"])
-
-
-                        two_cells_ship1 = TwoCellsShip(matrix_x = matrix_x, x = random_position_ships["two1"][0] - 500, y = random_position_ships["two1"][1], rotation= random_rotation_ships["two1"])
-                        two_cells_ship2 = TwoCellsShip(matrix_x = matrix_x, x = random_position_ships["two2"][0] - 500, y = random_position_ships["two2"][1], rotation= random_rotation_ships["two2"])
-                        two_cells_ship3 = TwoCellsShip(matrix_x = matrix_x, x = random_position_ships["two3"][0] - 500, y = random_position_ships["two3"][1], rotation= random_rotation_ships["two3"])
-
-
-                        one_cell_ship1 = OneCellsShip(matrix_x = matrix_x, x = random_position_ships["one1"][0] - 500, y = random_position_ships["one1"][1], rotation= random_rotation_ships["one1"])
-                        one_cell_ship2 = OneCellsShip(matrix_x = matrix_x, x = random_position_ships["one2"][0] - 500, y = random_position_ships["one2"][1], rotation= random_rotation_ships["one2"])
-                        one_cell_ship3 = OneCellsShip(matrix_x = matrix_x, x = random_position_ships["one3"][0] - 500, y = random_position_ships["one3"][1], rotation= random_rotation_ships["one3"])
-                        one_cell_ship4 = OneCellsShip(matrix_x = matrix_x, x = random_position_ships["one4"][0] - 500, y = random_position_ships["one4"][1], rotation= random_rotation_ships["one4"])
-                        
-                        screen.game_window.blit(four_cells_ship.ship_surf, four_cells_ship.ship_rect)
-
-                        screen.game_window.blit(three_cells_ship1.ship_surf, three_cells_ship1.ship_rect)
-                        screen.game_window.blit(three_cells_ship2.ship_surf, three_cells_ship2.ship_rect)
-
-                        screen.game_window.blit(two_cells_ship1.ship_surf, two_cells_ship1.ship_rect)
-                        screen.game_window.blit(two_cells_ship2.ship_surf, two_cells_ship2.ship_rect)
-                        screen.game_window.blit(two_cells_ship3.ship_surf, two_cells_ship3.ship_rect)
-
-                        screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
-                        screen.game_window.blit(one_cell_ship2.ship_surf, one_cell_ship2.ship_rect)
-                        screen.game_window.blit(one_cell_ship3.ship_surf, one_cell_ship3.ship_rect)
-                        screen.game_window.blit(one_cell_ship4.ship_surf, one_cell_ship4.ship_rect)
-
-
-
-                        print("wlwpeogmewrgwwww")
 
                 
 
@@ -738,8 +748,7 @@ if __name__ == "__main__":
                         }
                         '''
     
-                                
-
+                        
 
                         if position_ships["four"] == (100, 50) or position_ships["four"] == (50, 100):
                             if rotation_ships["four"]:
@@ -952,12 +961,16 @@ if __name__ == "__main__":
                                 "one3" : 1,
                                 "one4" : 1,
                             }
+                try:
+                    if field_player.get_clicked_cell_position != None and flag_follow_pvo_coordinates == True:
+                        flag_draw_pvo = (field_player.get_clicked_cell(event.pos))
+                except NameError:
+                    pass
+                    
 
                 if flag == "game":
-                    screen.game_window.blit(shop_image, (1140, 10))
 
-
-
+                                 
 
                     try:
                         from server_settings.server import rotation_enemy_ships, position_enemy_ships
@@ -1061,7 +1074,6 @@ if __name__ == "__main__":
 
 
                         
-                        
                         if user == "server":
 
                             path_to_json = os.path.abspath(__file__ + "/../data_s.json")
@@ -1073,11 +1085,9 @@ if __name__ == "__main__":
                         with open(path_to_json, 'r') as f:
                             data_turn = json.load(f)
 
-
                         if data_turn['turn']:
                             if wait:
                                 wait = False
-                                print("wwwwwork")
                                 hit = field_enemy.click(enemy_matrix, screen.game_window, event.pos)
                                 column, row = field_enemy.get_clicked_cell(event.pos)
                                 print(enemy_matrix[row][column])
@@ -1100,136 +1110,182 @@ if __name__ == "__main__":
                                     
 
 
-                                if one_cell_ship4:
-
-                                    if len(kill_position_ships["four"]) == 1:
-                                        kill_position_ships["four"].pop()
-                                    if len(kill_position_ships["three1"]) == 1:
-                                        kill_position_ships["three1"].pop()
-                                    if len(kill_position_ships["three2"]) == 1:
-                                        kill_position_ships["three2"].pop()
-                                    if len(kill_position_ships["two1"]) == 1:
-                                        kill_position_ships["two1"].pop()
-                                    if len(kill_position_ships["two2"]) == 1:
-                                        kill_position_ships["two2"].pop()
-                                    if len(kill_position_ships["two3"]) == 1:
-                                        kill_position_ships["two3"].pop()
 
 
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["four"]:
-
-                                        kill_position_ships["four"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
-
-
-
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three1"]:
-
-                                        kill_position_ships["three1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
-
-
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three2"]:
-
-                                        kill_position_ships["three2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                if len(kill_position_ships["four"]) == 1:
+                                    kill_position_ships["four"].pop()
+                                if len(kill_position_ships["three1"]) == 1:
+                                    kill_position_ships["three1"].pop()
+                                if len(kill_position_ships["three2"]) == 1:
+                                    kill_position_ships["three2"].pop()
+                                if len(kill_position_ships["two1"]) == 1:
+                                    kill_position_ships["two1"].pop()
+                                if len(kill_position_ships["two2"]) == 1:
+                                    kill_position_ships["two2"].pop()
+                                if len(kill_position_ships["two3"]) == 1:
+                                    kill_position_ships["two3"].pop()
 
 
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["four"]:
+                                    coins += 15
+                                    kill_position_ships["four"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
 
 
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two1"]:
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three1"]:
+                                    coins += 15
+                                    kill_position_ships["three1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
 
-                                        kill_position_ships["two1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
 
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two2"]:
-
-                                        kill_position_ships["two2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
-                                        
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two3"]:
-
-                                        kill_position_ships["two3"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three2"]:
+                                    coins += 15
+                                    kill_position_ships["three2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
 
 
 
 
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one1"]:
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two1"]:
+                                    coins += 15
+                                    kill_position_ships["two1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
 
-                                        kill_position_ships["one1"].append("pass")
-                                        screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
-
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one2"]:
-
-                                        kill_position_ships["one2"].append("pass")
-                                        screen.game_window.blit(one_cell_ship2.ship_surf, one_cell_ship2.ship_rect)
-
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one3"]:
-
-                                        kill_position_ships["one3"].append("pass")
-                                        screen.game_window.blit(one_cell_ship3.ship_surf, one_cell_ship3.ship_rect)
-                                        
-                                    if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one4"]:
-                                        
-                                        
-                                        kill_position_ships["one4"].append("pass")
-                                        screen.game_window.blit(one_cell_ship4.ship_surf, one_cell_ship4.ship_rect)
-                                        
-
-
-                                    print(kill_position_ships)
-                                    print((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
-
-
-                                    if kill_position_ships["four"] == []:
-                                        kill_position_ships["four"].append("pass")                                
-                                        screen.game_window.blit(four_cells_ship.ship_surf, four_cells_ship.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 4, position_enemy_ships["four"], rotation_enemy_ships["four"], screen.game_window)
-
-
-
-                                    if kill_position_ships["three1"] == []:
-                                        kill_position_ships["three1"].append("pass")
-                                        screen.game_window.blit(three_cells_ship1.ship_surf, three_cells_ship1.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three1"], rotation_enemy_ships["three1"], screen.game_window)
-
-                                    elif kill_position_ships["three2"] == []:
-                                        kill_position_ships["three2"].append("pass")
-                                        screen.game_window.blit(three_cells_ship2.ship_surf, three_cells_ship2.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three2"], rotation_enemy_ships["three2"], screen.game_window)
-
-
-
-
-
-                                    elif kill_position_ships["two1"] == []:
-                                        kill_position_ships["two1"].append("pass")
-                                        screen.game_window.blit(two_cells_ship1.ship_surf, two_cells_ship1.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two1"], rotation_enemy_ships["two1"], screen.game_window)
-                                        
-                                        
-                                    elif kill_position_ships["two2"] == []:
-                                        kill_position_ships["two2"].append("pass")
-                                        screen.game_window.blit(two_cells_ship2.ship_surf, two_cells_ship2.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two2"], rotation_enemy_ships["two2"], screen.game_window)
-
-                                    elif kill_position_ships["two3"] == []:
-                                        kill_position_ships["two3"].append("pass")
-                                        screen.game_window.blit(two_cells_ship3.ship_surf, two_cells_ship3.ship_rect)
-                                        field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two3"], rotation_enemy_ships["two3"], screen.game_window)
-
-
-
-                                if not hit:
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two2"]:
+                                    coins += 15
+                                    kill_position_ships["two2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
                                     
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two3"]:
+                                    coins += 15
+                                    kill_position_ships["two3"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+
+
+
+
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one1"]:
+
+                                    kill_position_ships["one1"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
+
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one2"]:
+
+                                    kill_position_ships["one2"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(one_cell_ship2.ship_surf, one_cell_ship2.ship_rect)
+
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one3"]:
+
+                                    kill_position_ships["one3"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(one_cell_ship3.ship_surf, one_cell_ship3.ship_rect)
+                                    
+                                if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one4"]:
+                                    
+                                    
+                                    kill_position_ships["one4"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(one_cell_ship4.ship_surf, one_cell_ship4.ship_rect)
+                                    
+
+
+                                print(kill_position_ships)
+                                print((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+
+
+                                if kill_position_ships["four"] == []:
+                                    kill_position_ships["four"].append("pass")
+                                    coins += 25                         
+                                    screen.game_window.blit(four_cells_ship.ship_surf, four_cells_ship.ship_rect)
+                                    print(position_enemy_ships["four"])
+                                    field_enemy.fill_after_destroy(enemy_matrix, 4, position_enemy_ships["four"], rotation_enemy_ships["four"], screen.game_window)
+
+
+
+                                if kill_position_ships["three1"] == []:
+                                    kill_position_ships["three1"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(three_cells_ship1.ship_surf, three_cells_ship1.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three1"], rotation_enemy_ships["three1"], screen.game_window)
+
+                                if kill_position_ships["three2"] == []:
+                                    kill_position_ships["three2"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(three_cells_ship2.ship_surf, three_cells_ship2.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three2"], rotation_enemy_ships["three2"], screen.game_window)
+
+
+
+
+
+                                if kill_position_ships["two1"] == []:
+                                    kill_position_ships["two1"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(two_cells_ship1.ship_surf, two_cells_ship1.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two1"], rotation_enemy_ships["two1"], screen.game_window)
+                                    
+                                    
+                                if kill_position_ships["two2"] == []:
+                                    kill_position_ships["two2"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(two_cells_ship2.ship_surf, two_cells_ship2.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two2"], rotation_enemy_ships["two2"], screen.game_window)
+
+                                if kill_position_ships["two3"] == []:
+                                    kill_position_ships["two3"].append("pass")
+                                    coins += 25
+                                    screen.game_window.blit(two_cells_ship3.ship_surf, two_cells_ship3.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two3"], rotation_enemy_ships["two3"], screen.game_window)
+
+
+                            
+                                if not hit:
+                                    print('idk')
                                     client_socket.send('turn'.encode())
                                     data_turn['turn'] = False
-                                    print("")
                                 with open(path_to_json, 'w') as f:
                                     json.dump(data_turn, f, indent = 4)
-
                                 wait = True
+                
 
+                            if war_plane_image != None:
+                                if war_plane_rect.collidepoint(event.pos) and coins >= 75:
+                                    
+
+                                    all_random_coordinates = []
+                                    
+
+
+                                    while len(all_random_coordinates) != 10:
+                                        print("hello")
+
+                                        random_row = random.randint(0, 9)
+                                        random_column = random.randint(0, 9)
+
+                                        print(random_row)
+                                        print(random_column)                                
+
+                                        if [random_column, random_row] in all_random_coordinates:
+                                            pass
+                                        else:
+                                            all_random_coordinates.append([random_column, random_row])
+                                            field_enemy.click(enemy_matrix, screen.game_window, column = random_column, row = random_row)
+
+                                    coins -= 75
+
+                                    client_socket.send('turn'.encode())
+                                    data_turn['turn'] = False
+                                    with open(path_to_json, 'w') as f:
+                                        json.dump(data_turn, f, indent = 4)
+                                            
+                                    print(all_random_coordinates)
+
+
+
+                        
                         else:
                             pass
                     except Exception as e:
                         print(e)
- 
+
+
+
             if event.type == pygame.MOUSEMOTION:
 
                 if one_cell_ship4 != None:
