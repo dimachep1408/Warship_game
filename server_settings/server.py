@@ -31,7 +31,9 @@ def start_server(start_server = True):
     
     def getting_message(): 
         print("work")
+
         global position_enemy_ships, data_turn, position_shot, flag_send_message, rotation_enemy_ships, closed, attack_3x3_position, aimed_strike_position
+
         while True: 
             try: 
                 data = client_socket.recv(1024).decode()
@@ -57,6 +59,8 @@ def start_server(start_server = True):
                     print(position_shot)
                 elif "!" in data:
                     closed = True
+                elif ":" in data:
+                    list_pvo_protect_sends = tuple(data.split(":"))
             except Exception as e: 
                 print(f"work - {e}")
                 return data

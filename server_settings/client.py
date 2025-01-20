@@ -50,6 +50,8 @@ def connect_client(ip = None, port = None):
                     print(position_shot)
                 elif "!" in data:
                     closed = True
+                elif ":" in data:
+                    list_pvo_protect_sends = data
             except Exception as e: 
                 print(f"work - {e}")
                 return data

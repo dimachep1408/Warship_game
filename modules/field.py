@@ -1,5 +1,5 @@
 import pygame, os
-from .button import Button
+from modules.button import Button
 
 class Field():
     def __init__(self, width = 500, height = 500, color = "light gray", dest = (0, 0)):
@@ -95,13 +95,16 @@ class Field():
         hit = False
         if mouse_pos != None:
             column, row = self.get_clicked_cell(mouse_pos)
+
         if list_ships[row][column] % 3 == 0:
+
             screen.blit(self.circle, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))
         elif list_ships[row][column] == 2:
             hit = True
             screen.blit(self.cross, ((column + self.dest[0] // 50) * 50, (row + self.dest[1] // 50) * 50))
         return hit
     def fill_after_destroy(self, matrix, ship_size, position, rotation, screen):
+
         row, column = self.get_clicked_cell(position, enemy = True)
         if rotation:
             for i in range(ship_size):
@@ -192,3 +195,4 @@ class Field():
             hit = f'cross%({(row + self.dest[0] // 50) * 50, (column + self.dest[1] // 50) * 50})'
             # matrix[column][row] = 0
         return hit
+

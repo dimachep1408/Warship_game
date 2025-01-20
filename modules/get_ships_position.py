@@ -92,6 +92,7 @@ def get_ships_position(matrix : dict, return_position_ships = True):
 
 
 
+
                 try:
                     if matrix[row_count][number_count + 2] == 2 or matrix[row_count + 2][number_count] == 2:
                         pass
@@ -122,7 +123,6 @@ def get_ships_position(matrix : dict, return_position_ships = True):
                             position_ships_dict["two1"] = (row_count, number_count)
                             writed_ships["two1"] = 1
 
-
                     try:
                         if matrix[row_count + 1][number_count] == 2:
 
@@ -147,6 +147,7 @@ def get_ships_position(matrix : dict, return_position_ships = True):
                         pass
 
                         
+
 
 
 
@@ -198,7 +199,6 @@ def get_ships_position(matrix : dict, return_position_ships = True):
                                 writed_ships["two1"] = 0
                     except:
                         pass
-
                         
 
                 

@@ -6,4 +6,4 @@ from .one_cell import OneCellsShip
 from .three_cells import ThreeCellsShip
 from .two_cells import TwoCellsShip
 from .get_ships_position import get_ships_position
-# from .two_cells impo
+from .ship_auto_place import auto_ship

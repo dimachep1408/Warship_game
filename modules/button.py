@@ -1,7 +1,6 @@
 import pygame
 import os
 
-
 class Button():
     def __init__(self, surface, position = (0, 0), color = "gray", border_size = 0, size = (150, 75)):
         
@@ -18,5 +17,7 @@ class Button():
         self.text = self.font.render(f"{text}", True, color)
         
     def button_clicked(self, mouse_position):
+
+        
 
         return self.button_rect.collidepoint(mouse_position)
