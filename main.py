@@ -127,6 +127,7 @@ kill_position_ships = {
     "one4" : [],
 }
 
+base_font = pygame.font.Font(None, 32)
 
 player_matrix = []
 for i in range(12):
@@ -258,7 +259,7 @@ buttons_position = {
 
 pvo_count = 2
 
-
+user_ip = ""
 
 war_plane_image = pygame.image.load(os.path.abspath(__file__ + "/../images/war_plane.png"))
 war_plane_image = pygame.transform.scale(war_plane_image, (100, 100))
@@ -330,6 +331,7 @@ protect_shield_image = pygame.image.load(os.path.abspath(__file__ + "/../images/
 protect_shield_image = pygame.transform.scale(protect_shield_image, (150, 150))
 
 
+
 if __name__ == "__main__":
     while True:
 
@@ -346,10 +348,7 @@ if __name__ == "__main__":
             screen.game_window.blit(bg, (0,0))
 
 
-            
-            input_ip = pygame.Rect(1500, 300, 200, 50)
-
-            pygame.draw.rect(screen.game_window, "#00ab99", input_ip)
+        
 
             
 
@@ -370,6 +369,13 @@ if __name__ == "__main__":
             screen.game_window.blit(bg, (0,0))
 
 
+            ip_text = Button(screen.game_window, position=(-100, -100), color="dark blue")
+            ip_text.Font(text='Your IP address', font_size=30)
+            screen.game_window.blit(ip_text.text, dest=(750, 150))
+
+            input_ip = pygame.Rect(750, 195, 200, 50)
+
+            pygame.draw.rect(screen.game_window, "#00ab99", input_ip, border_radius = 5)
 
 
             coin_sprite = animation_coin[animation_coin_count]
@@ -715,7 +721,7 @@ if __name__ == "__main__":
                 if button_client.button_clicked(event.pos):
                     pygame.mixer.Sound.play(btn_click_sound)
                     if flag == 'menu1':
-                        server_settings.connect_client('192.168.0.103', 8080)
+                        server_settings.connect_client(f'{user_ip}', 8080)
                         from server_settings.client import client_socket
                         flag_message = True
                         client_x, client_y = (100000000000, 1000000000000)
@@ -1782,8 +1788,33 @@ if __name__ == "__main__":
                         "one4" : 0,
                     } 
 
-
+            if event.type == pygame.KEYDOWN: 
     
+                # Check for backspace 
+                if event.key == pygame.K_BACKSPACE: 
+    
+                    # get text input from 0 to -1 i.e. end. 
+                    user_ip = user_ip[:-1] 
+    
+                # Unicode standard is used for string 
+                # formation 
+                else: 
+                    user_ip += event.unicode
+        
+                
+                # set width of textfield so that text cannot get 
+                # outside of user's text input 
+                input_ip.w = max(30, text_surface.get_width()+10) 
+
+
+
+        if flag == "menu1":
+            text_surface = base_font.render(user_ip, True, (255, 255, 255)) 
+        
+                    # render at position stated in arguments 
+            screen.game_window.blit(text_surface, (input_ip.x+5, input_ip.y+5)) 
+
+
         animation_coin_count += 1
 
         pygame.display.update()
