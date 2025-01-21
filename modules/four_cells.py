@@ -16,13 +16,12 @@ class FourCellsShip():
         
         if not rotation:  
             self.ship_surf = pygame.transform.rotate(self.ship_surf, 90) 
-        # Получение прямоугольника
+
         self.ship_rect = self.ship_surf.get_rect()
 
-        # Установка начальных координат
+
         self.ship_rect.topleft = (x, y)
 
-        # Сохранение других параметров
         self.matrix_x = matrix_x
         self.rotation = rotation
         self.screen = screen

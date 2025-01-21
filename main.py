@@ -47,7 +47,11 @@ flag_message = False
 animation_coin_count = 0
 
 
-btn_click_sound = pygame.mixer.Sound(os.path.abspath(__file__ + "/../sounds/click_sound2.mp3"))
+btn_click_sound = pygame.mixer.Sound(os.path.abspath(__file__ + "/../sounds/click_sound2.ogg"))
+expload_sound = pygame.mixer.Sound(os.path.abspath(__file__ + "/../sounds/exploation.ogg"))
+water_sound = pygame.mixer.Sound(os.path.abspath(__file__ + "/../sounds/water_splash.ogg"))
+
+
 
 position_ships = {
     "four" : (100, 50),
@@ -64,6 +68,11 @@ position_ships = {
     "one3" : (225, 250),
     "one4" : (325, 250),
 }
+
+
+programIcon = pygame.image.load(os.path.abspath(__file__ + "/../images/palm_three.jpg"))
+
+pygame.display.set_icon(programIcon)
 
 
 matrix_x = [[0,0,0,0,0,0,0,0,0,0,0],
@@ -182,7 +191,7 @@ first_coordinate = ""
 
 rotate_button = None
 button_submit_ships = None
-button_auto_ships = None
+auto_button = None
 
 server_x, server_y = (255, 350)
 
@@ -231,7 +240,9 @@ animation_coin = [
     pygame.image.load(os.path.abspath(__file__ + "/../images/coinflip4.png")),
     pygame.image.load(os.path.abspath(__file__ + "/../images/coinflip3.png")),
     pygame.image.load(os.path.abspath(__file__ + "/../images/coinflip2.png")),
-]       
+]    
+
+
 
 ip = ""
 
@@ -310,6 +321,9 @@ fear_and_panic_count = 0
 
 
 flag_follow_pvo_coordinates = False
+
+
+
 
 
 protect_shield_image = pygame.image.load(os.path.abspath(__file__ + "/../images/protect_shield.png"))
@@ -431,7 +445,10 @@ if __name__ == "__main__":
             rotate_button = Button(screen.game_window, position=(610, 20), color="#01796F")
             rotate_button.Font(text='rotate', font_size=40)
             screen.game_window.blit(rotate_button.text, dest=(639, 25))
-
+            
+            auto_button = Button(screen.game_window, position=(770, 20), color="#01796F")
+            auto_button.Font(text='auto', font_size=40)
+            screen.game_window.blit(auto_button.text, dest=(803, 25))
 
             button_submit_ships = Button(screen.game_window, position = (ships_x, ships_y), color = '#01796F')
             button_submit_ships.Font(text='submit', font_size=40)
@@ -467,6 +484,12 @@ if __name__ == "__main__":
                 pass
             
             try:
+                aimed_strike_position[0] -= 600
+                field_player.click(player_matrix, screen.game_window, mouse_pos = aimed_strike_position)
+            except:
+                pass
+            
+            try:
                 if user == "server":
                     path_to_json = os.path.abspath(__file__ + "/../data_s.json")
                 elif user == "client":     
@@ -490,13 +513,13 @@ if __name__ == "__main__":
 
             button_3x3 = pygame.transform.scale(button_3x3, (100, 100))
 
-            button_3x3_text = Button(screen.game_window, position=(825, 0), color = "#6ab1db", size= (100, 50))
+            button_3x3_text = Button(screen.game_window, position=(825, 10), color = "#6ab1db", size= (100, 50))
             button_3x3_text.Font(text='100', font_size=40)
 
             button_3x3_rect = button_3x3.get_rect(topleft = (800, 10))
 
             screen.game_window.blit(button_3x3, dest=(800, 10))
-            screen.game_window.blit(button_3x3_text.text, dest=(825, 95))
+            screen.game_window.blit(button_3x3_text.text, dest=(825, 85))
             
 
 
@@ -504,21 +527,21 @@ if __name__ == "__main__":
             
             button_aimed_strike = pygame.transform.scale(button_aimed_strike, (100, 100))
 
-            button_strike_text = Button(screen.game_window, position=(1125,  80), color = "#6ab1db", size= (100, 50))
+            button_strike_text = Button(screen.game_window, position=(1125,  85), color = "#6ab1db", size= (100, 50))
             button_strike_text.Font(text='200', font_size=40)
 
-            button_aimed_strike_rect = button_aimed_strike.get_rect(topleft = (1100, 0))
+            button_aimed_strike_rect = button_aimed_strike.get_rect(topleft = (1100, 10))
 
-            screen.game_window.blit(button_aimed_strike, dest=(1100, 0)) 
-            screen.game_window.blit(button_strike_text.text, dest=(1125, 80)) 
-
-
+            screen.game_window.blit(button_aimed_strike, dest=(1100, 10)) 
+            screen.game_window.blit(button_strike_text.text, dest=(1125, 85)) 
 
 
-            screen.game_window.blit(war_plane_image, (950, 0))
+
+
+            screen.game_window.blit(war_plane_image, (950, 10))
 
             war_plane_text.Font(text = "150", font_size = 40)
-            screen.game_window.blit(war_plane_text.text, dest=(975, 80)) 
+            screen.game_window.blit(war_plane_text.text, dest=(975, 85)) 
 
 
             text_background = pygame.Rect(10, 10, 300, 40)
@@ -692,7 +715,7 @@ if __name__ == "__main__":
                 if button_client.button_clicked(event.pos):
                     pygame.mixer.Sound.play(btn_click_sound)
                     if flag == 'menu1':
-                        server_settings.connect_client('192.168.0.101', 8080)
+                        server_settings.connect_client('192.168.0.103', 8080)
                         from server_settings.client import client_socket
                         flag_message = True
                         client_x, client_y = (100000000000, 1000000000000)
@@ -765,9 +788,6 @@ if __name__ == "__main__":
                         from server_settings.server import client_socket
                     except:
                         pass
-                    
-                    if rotate_button != None:
-                        screen.game_window.blit(rotate_button.text, dest= (155, 475))
 
 
                     if rotate_button and rotate_button.button_clicked(event.pos):
@@ -880,6 +900,11 @@ if __name__ == "__main__":
                             else:
                                 rotation_ships["one4"] = 1
                                 position_ships["one4"] = (325, 250)
+                                
+                    if auto_button and auto_button.button_clicked(event.pos):
+                        pygame.mixer.Sound.play(btn_click_sound)
+                        auto_ship(position_ships, rotation_ships, player_matrix)
+                        
 
                             
                     if button_submit_ships and button_submit_ships.button_clicked(event.pos):
@@ -1143,6 +1168,149 @@ if __name__ == "__main__":
                                             screen.game_window.blit(field_enemy.circle, ast.literal_eval(i.split('%')[-1]))
                                         elif 'cross' in i:
                                             screen.game_window.blit(field_enemy.cross, ast.literal_eval(i.split('%')[-1]))
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["four"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["four"]) == 1:
+                                                kill_position_ships["four"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["four"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three1"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["three1"]) == 1:
+                                                kill_position_ships["three1"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["three1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three2"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["three2"]) == 1:
+                                                kill_position_ships["three2"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["three2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+
+
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two1"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["two1"]) == 1:
+                                                kill_position_ships["two1"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["two1"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two2"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["two2"]) == 1:
+                                                kill_position_ships["two2"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["two2"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two3"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            if len(kill_position_ships["two3"]) == 1:
+                                                kill_position_ships["two3"].pop()
+                                            coins += 15
+                                            try:
+                                                kill_position_ships["two3"].remove((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+                                            except:
+                                                pass
+
+
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one1"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                            
+                                            kill_position_ships["one1"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one2"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                      
+                                            kill_position_ships["one2"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(one_cell_ship2.ship_surf, one_cell_ship2.ship_rect)
+
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one3"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                   
+                                            kill_position_ships["one3"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(one_cell_ship3.ship_surf, one_cell_ship3.ship_rect)
+                                            
+                                        if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one4"]:
+                                            pygame.mixer.Sound.play(expload_sound)
+                                          
+                                            
+                                            kill_position_ships["one4"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(one_cell_ship4.ship_surf, one_cell_ship4.ship_rect)
+                                            
+
+
+                                        print(kill_position_ships)
+                                        print((clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150))
+
+
+                                        if kill_position_ships["four"] == []:
+                                            kill_position_ships["four"].append("pass")
+                                            coins += 25                         
+                                            screen.game_window.blit(four_cells_ship.ship_surf, four_cells_ship.ship_rect)
+                                            print(position_enemy_ships["four"])
+                                            field_enemy.fill_after_destroy(enemy_matrix, 4, position_enemy_ships["four"], rotation_enemy_ships["four"], screen.game_window)
+
+
+
+                                        if kill_position_ships["three1"] == []:
+                                            kill_position_ships["three1"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(three_cells_ship1.ship_surf, three_cells_ship1.ship_rect)
+                                            field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three1"], rotation_enemy_ships["three1"], screen.game_window)
+
+                                        if kill_position_ships["three2"] == []:
+                                            kill_position_ships["three2"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(three_cells_ship2.ship_surf, three_cells_ship2.ship_rect)
+                                            field_enemy.fill_after_destroy(enemy_matrix, 3, position_enemy_ships["three2"], rotation_enemy_ships["three2"], screen.game_window)
+
+
+
+
+
+                                        if kill_position_ships["two1"] == []:
+                                            kill_position_ships["two1"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(two_cells_ship1.ship_surf, two_cells_ship1.ship_rect)
+                                            field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two1"], rotation_enemy_ships["two1"], screen.game_window)
+                                            
+                                            
+                                        if kill_position_ships["two2"] == []:
+                                            kill_position_ships["two2"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(two_cells_ship2.ship_surf, two_cells_ship2.ship_rect)
+                                            field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two2"], rotation_enemy_ships["two2"], screen.game_window)
+
+                                        if kill_position_ships["two3"] == []:
+                                            kill_position_ships["two3"].append("pass")
+                                            coins += 25
+                                            screen.game_window.blit(two_cells_ship3.ship_surf, two_cells_ship3.ship_rect)
+                                            field_enemy.fill_after_destroy(enemy_matrix, 2, position_enemy_ships["two3"], rotation_enemy_ships["two3"], screen.game_window)
+
+                                        
                                     aimed_strike = False
                                     list_strikes = []
                             
@@ -1180,8 +1348,7 @@ if __name__ == "__main__":
                                                 all_random_coordinates.append([random_column, random_row])
                                                 field_enemy.click(enemy_matrix, screen.game_window, column = random_column, row = random_row)
                                                 client_socket.send(f'/{[random_column, random_row]}'.encode())
-
-
+                                        
                                         coins -= 150
 
                                         client_socket.send('turn'.encode())
@@ -1190,6 +1357,8 @@ if __name__ == "__main__":
                                             json.dump(data_turn, f, indent = 4)
                                             
                                         print(all_random_coordinates)
+
+
                                 wait = False
                                 hit = field_enemy.click(enemy_matrix, screen.game_window, event.pos)
                                 column, row = field_enemy.get_clicked_cell(event.pos)
@@ -1224,6 +1393,7 @@ if __name__ == "__main__":
 
 
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["four"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["four"]) == 1:
                                         kill_position_ships["four"].pop()
                                     coins += 15
@@ -1233,6 +1403,7 @@ if __name__ == "__main__":
                                         pass
 
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three1"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["three1"]) == 1:
                                         kill_position_ships["three1"].pop()
                                     coins += 15
@@ -1242,6 +1413,7 @@ if __name__ == "__main__":
                                         pass
 
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["three2"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["three2"]) == 1:
                                         kill_position_ships["three2"].pop()
                                     coins += 15
@@ -1253,6 +1425,7 @@ if __name__ == "__main__":
 
 
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two1"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["two1"]) == 1:
                                         kill_position_ships["two1"].pop()
                                     coins += 15
@@ -1261,6 +1434,7 @@ if __name__ == "__main__":
                                     except:
                                         pass
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two2"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["two2"]) == 1:
                                         kill_position_ships["two2"].pop()
                                     coins += 15
@@ -1269,6 +1443,7 @@ if __name__ == "__main__":
                                     except:
                                         pass
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["two3"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     if len(kill_position_ships["two3"]) == 1:
                                         kill_position_ships["two3"].pop()
                                     coins += 15
@@ -1280,29 +1455,34 @@ if __name__ == "__main__":
 
 
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one1"]:
+                                    pygame.mixer.Sound.play(expload_sound)
 
                                     kill_position_ships["one1"].append("pass")
                                     coins += 25
                                     screen.game_window.blit(one_cell_ship1.ship_surf, one_cell_ship1.ship_rect)
-
+                                    field_enemy.fill_after_destroy(enemy_matrix, 1, position_enemy_ships["one1"], rotation_enemy_ships["one1"], screen.game_window)
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one2"]:
+                                    pygame.mixer.Sound.play(expload_sound)
 
                                     kill_position_ships["one2"].append("pass")
                                     coins += 25
                                     screen.game_window.blit(one_cell_ship2.ship_surf, one_cell_ship2.ship_rect)
-
+                                    field_enemy.fill_after_destroy(enemy_matrix, 1, position_enemy_ships["one2"], rotation_enemy_ships["one2"], screen.game_window)
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one3"]:
+                                    pygame.mixer.Sound.play(expload_sound)
 
                                     kill_position_ships["one3"].append("pass")
                                     coins += 25
                                     screen.game_window.blit(one_cell_ship3.ship_surf, one_cell_ship3.ship_rect)
-                                    
+                                    field_enemy.fill_after_destroy(enemy_matrix, 1, position_enemy_ships["one3"], rotation_enemy_ships["one3"], screen.game_window)
                                 if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one4"]:
+                                    pygame.mixer.Sound.play(expload_sound)
                                     
-                                    
+                                    print('fygugzfyd guzgudguzgfduguzgfgyyyugz')
                                     kill_position_ships["one4"].append("pass")
                                     coins += 25
                                     screen.game_window.blit(one_cell_ship4.ship_surf, one_cell_ship4.ship_rect)
+                                    field_enemy.fill_after_destroy(enemy_matrix, 1, position_enemy_ships["one4"], rotation_enemy_ships["one4"], screen.game_window)
                                     
 
 
@@ -1357,9 +1537,12 @@ if __name__ == "__main__":
 
                             
                                 if not hit:
+                                    pygame.mixer.Sound.play(water_sound)
                                     print('idk')
                                     client_socket.send('turn'.encode())
                                     data_turn['turn'] = False
+
+                                    
 
                                     
                                 with open(path_to_json, 'w') as f:
@@ -1605,7 +1788,7 @@ if __name__ == "__main__":
 
         pygame.display.update()
         pygame.display.flip()
-        pygame.time.delay(160)
+        # pygame.time.delay(160)
         clock.tick(FPS)
 
         
