@@ -1,6 +1,6 @@
 # Project game - "Warship Battle"
 
-_Наш проект - це гра "Морський бій" яка дає змогу пограти зі своїм другом по мережі інтернет, та насолодитися процесом вашого просування у грі! Ви можете не тільки розташовувати кораблі та перемагати над суперником, а получати монети, за які можете купувати доповнення у магазині, що значно скращить процесс вашої гри разом із другом!_
+_Наш проєкт — це гра "Морський бій", яка дозволяє вам грати з другом через інтернет і насолоджуватися кожним моментом вашого прогресу в грі! Ви зможете не тільки розставляти кораблі та перемагати суперника, а й заробляти монети. За них можна купувати різні доповнення в магазині, що зробить гру з другом ще цікавішою та захопливішою!_
 
 ---
 
@@ -28,20 +28,22 @@ _Наш проект - це гра "Морський бій" яка дає зм�
 ### Windows:
 
 1. >git clone https://github.com/dimachep1408/Warship_game.git
-2. >python -m venv venv
-3. >open command prompt terminal (cmd) ![alt text](image-2.png)
-4. > venv\scripts\activate.bat
-2. >pip install -r requirements.txt
-3. > python main.py
+2. >cd Warship_game
+3. >python -m venv venv
+4. >open command prompt terminal (cmd) ![alt text](image-2.png)
+5. > venv\scripts\activate.bat
+6. >pip install -r requirements.txt
+7. > python main.py
   
 ### Mac:
 
 1. >git clone https://github.com/dimachep1408/Warship_game.git
-2. >python3 -m venv venv
-3. >open git-bash terminal ![alt text](image-3.png)
-4. > venv\bin\activate.bat
-2. >pip3 install -r requirements.txt
-3. > python main.py
+2. >cd Warship_game
+3. >python3 -m venv venv
+4. >open git-bash terminal ![alt text](image-3.png)
+5. > source venv/bin/activate
+6. >pip3 install -r requirements.txt
+7. > python3 main.py
   
 
 

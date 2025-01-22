@@ -1768,36 +1768,36 @@ if __name__ == "__main__":
                             "one4" : 0,
                         } 
 
-            if event.type == pygame.KEYUP:
+                elif event.type == pygame.KEYUP:
 
-                 
-    
-                # Check for backspace 
-                if event.key == pygame.K_BACKSPACE: 
-    
-                    # get text input from 0 to -1 i.e. end. 
-                    user_ip = user_ip[:-1] 
-                    print("wf,poem")
-    
-                # Unicode standard is used for string 
-                # formation 
-                else: 
-                    print("FEFEWFc")
-                    user_ip += event.unicode
+                    
         
-                
-                # set width of textfield so that text cannot get 
-                # outside of user's text input 
-                input_ip.w = max(13, text_surface.get_width()+10)
-                
-                if event.key == pygame.K_RETURN:
-                    user_ip = user_ip[:-1] 
-                    server_settings.connect_client(f'{user_ip}', 8080)
-                    from server_settings.client import client_socket
-                    flag_message = True
-                    client_x, client_y = (100000000000, 1000000000000)
-                    server_x, server_y = (100000000000, 1000000000000)
-                    flag = "menu2"
+                    # Check for backspace 
+                    if event.key == pygame.K_BACKSPACE: 
+        
+                        # get text input from 0 to -1 i.e. end. 
+                        user_ip = user_ip[:-1] 
+                        print("wf,poem")
+        
+                    # Unicode standard is used for string 
+                    # formation 
+                    else: 
+                        print("FEFEWFc")
+                        user_ip += event.unicode
+            
+                    
+                    # set width of textfield so that text cannot get 
+                    # outside of user's text input 
+                    input_ip.w = max(13, text_surface.get_width()+10)
+                    
+                    if event.key == pygame.K_RETURN:
+                        user_ip = user_ip[:-1] 
+                        server_settings.connect_client(f'{user_ip}', 8080)
+                        from server_settings.client import client_socket
+                        flag_message = True
+                        client_x, client_y = (100000000000, 1000000000000)
+                        server_x, server_y = (100000000000, 1000000000000)
+                        flag = "menu2"
 
             if len(user_ip) > 13:
                 user_ip = user_ip[:-1] 
