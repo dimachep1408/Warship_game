@@ -729,7 +729,39 @@ print(get_ships_position(matrix = player_matrix, return_position_ships= False))
 
 4. > Якщо корабель вілпустили на території поля то він підровнюєтся під ту клітинки над якою ви відпустили клавішу
 
+# Weapons 
 
+### In our game we added 3 weapons it's: <br/> 
+
+* >3x3 bomb; <br/>
+* >air strike <br/> 
+* >aimed strike;
+
+---
+
+* >3x3 bomb kill all ships in 1 cells around cursor and clicked cell <br/>
+
+* >air strike bomb 5 random cells <br/>
+
+* >aimed strike : you choose 5 cells and shoot to they're
+
+---
+
+# Weapons
+
+### У нашій грі ми додали 3 види зброї: <br/> 
+
+* >3x3 бомба; <br/>
+* >повітряний удар <br/> 
+* >прицільний удар;
+
+---
+
+* >Бомба 3x3 вбиває всі кораблі в 1 клітинці навколо курсора та клацання клітинки <br/>
+
+* >авіаційний удар взриває 5 випадкових клітин <br/>
+
+* >прицільний удар: ви вибираєте 5 клітин і стріляєте в них
 
 # Design & Graphics
 
@@ -750,6 +782,6 @@ it gives a brutal style to the text, just like in a game about a ship battle
 
 # New expirience 
 
-Коли ми створювали цю гру ми получили багато нового досвіду та навчилися створювати свою власну гру, та зробити під'єднування до іншої людини, як створити структуру до нашої гри, як створити бій між тобою та оппонентом тощо. Створили реально багато речей які використвовували за минулі три місяці, та навчилися тому що не знали раніше. Наша команда докладала всіх зусиль, щоб зробити реально круту гру, яка працює та в неї можна грати. Говоримо дякую усією командою, особливо цьому змаганню! / When creating this game we got many new expirience and leaned how to create own game and how to join another person, how to make structure to our game, how to make the battle between you and opponent. Created really many things for the past three months, and learnt many things too. Our team was trying our best to make a really cool game, which would work without any mistakes. Saying thanks to all and to this competition!
+Коли ми працювали над створенням цієї гри, ми здобули багато нового досвіду і навчилися розробляти власну гру. Ми освоїли підключення гри до іншого гравця, створення її структури, механіки бою між гравцем і опонентом та багато іншого. За останні три місяці ми реалізували чимало ідей і освоїли навички, яких раніше не мали. Наша команда доклала максимум зусиль, щоб створити справді круту, працюючу гру, в яку можна грати. Ми щиро вдячні всією командою, особливо організаторам цього змагання! / When creating this game we got many new expirience and leaned how to create own game and how to join another person, how to make structure to our game, how to make the battle between you and opponent. Created really many things for the past three months, and learnt many things too. Our team was trying our best to make a really cool game, which would work without any mistakes. Saying thanks to all and to this competition!
 
 ---

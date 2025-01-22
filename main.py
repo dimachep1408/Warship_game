@@ -313,15 +313,16 @@ protect_shield_image = pygame.transform.scale(protect_shield_image, (150, 150))
 music_count = 1
 
 
-pygame.mixer.music.load(__file__ + "/../sounds/1.mp3")
+pygame.mixer.music.load(os.path.abspath(__file__ + "/../sounds/1.mp3"))
 pygame.mixer.music.play()
-pygame.mixer.music.queue(__file__ + "/../sounds/2.mp3")
-pygame.mixer.music.queue(__file__ + "/../sounds/3.mp3")
+pygame.mixer.music.queue(os.path.abspath(__file__ + "/../sounds/2.mp3"))
+pygame.mixer.music.queue(os.path.abspath(__file__ + "/../sounds/3.mp3"))
 
 pygame.mixer.music.set_volume(0.35)
 
+start = True
 if __name__ == "__main__":
-    while True:
+    while start:
         try:
 
             screen.game_window.blit(blackout_screen, (0,  blackout_screen_y))
@@ -675,7 +676,10 @@ if __name__ == "__main__":
                         client_socket.send("close!")
                     except:
                         pass
+                    start = False
+                    
                     pygame.quit()
+                    break
 
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -1237,7 +1241,6 @@ if __name__ == "__main__":
                                                 
                                             if (clicked_cell[0] * 50 + 550, clicked_cell[1] * 50 + 150) in kill_position_ships["one4"]:
                                                 
-                                            
                                                 
                                                 kill_position_ships["one4"].append("pass")
                                                 coins += 25
@@ -1765,17 +1768,21 @@ if __name__ == "__main__":
                             "one4" : 0,
                         } 
 
-            if event.type == pygame.KEYDOWN: 
+            if event.type == pygame.KEYUP:
+
+                 
     
                 # Check for backspace 
                 if event.key == pygame.K_BACKSPACE: 
     
                     # get text input from 0 to -1 i.e. end. 
                     user_ip = user_ip[:-1] 
+                    print("wf,poem")
     
                 # Unicode standard is used for string 
                 # formation 
                 else: 
+                    print("FEFEWFc")
                     user_ip += event.unicode
         
                 
@@ -1801,7 +1808,6 @@ if __name__ == "__main__":
             
                         # render at position stated in arguments 
                 screen.game_window.blit(text_surface, (input_ip.x+5, input_ip.y+5)) 
-
 
             pygame.display.update()
             pygame.display.flip()
